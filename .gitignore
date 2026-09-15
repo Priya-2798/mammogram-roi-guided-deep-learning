@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Raw datasets
+/data/
+/datasets/
+/CBIS-DDSM/
+/mini-MIAS/
+/MIAS/
+*.dcm
+*.dicom
+
+# Model checkpoints and large training artefacts
+/checkpoints/
+*.ckpt
+*.pth
+*.pt
+*.h5
+
+# Temporary/generated outputs
+/tmp/
+/temp/
+/logs/
+*.log
+
+# Packaging
+build/
+dist/
+*.egg-info/

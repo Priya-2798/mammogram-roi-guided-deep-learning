@@ -1,0 +1,20 @@
+{
+  "created_at": "2026-08-01T22:43:29.389945",
+  "experiment": "benign_oneclass_malignant_detection",
+  "dataset": "CBIS-DDSM mass cases",
+  "normal_cases_available": false,
+  "framing": "one-class modelling of benign mass-case features; malignant cases scored as deviations",
+  "encoder": "ResNet-50 V2 breast-crop 512 checkpoint",
+  "encoder_checkpoint": "/content/drive/MyDrive/BreastCancer_dissertation/Models/resnet50_v2_breastcrop_512_best.pth",
+  "image_size": 512,
+  "feature_dim": 2048,
+  "pca_components": 128,
+  "pca_variance_retained": 0.9241256713867188,
+  "methods": [
+    "Mahalanobis",
+    "IsolationForest"
+  ],
+  "threshold_rule": "validation Youden J",
+  "bootstrap_n": 1000,
+  "seed": 42
+}

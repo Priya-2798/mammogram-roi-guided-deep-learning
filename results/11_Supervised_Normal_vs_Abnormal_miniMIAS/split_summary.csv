@@ -1,0 +1,4 @@
+split,images,patients,normal_images,abnormal_images,abnormal_rate
+train,224,112,144,80,0.35714285714285715
+validation,48,24,32,16,0.3333333333333333
+locked_test,50,25,31,19,0.38

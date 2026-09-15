@@ -1,0 +1,6 @@
+{
+  "0.0": "/content/drive/MyDrive/BreastCancer_dissertation/Models/convnext_roi_attention_2class/convnext_tiny_roi_attn2c_convnext_attn2c_v2_seed42/convnext_tiny_cam2_lambda0.0.pth",
+  "0.1": "/content/drive/MyDrive/BreastCancer_dissertation/Models/convnext_roi_attention_2class/convnext_tiny_roi_attn2c_convnext_attn2c_v2_seed42/convnext_tiny_cam2_lambda0.1.pth",
+  "0.5": "/content/drive/MyDrive/BreastCancer_dissertation/Models/convnext_roi_attention_2class/convnext_tiny_roi_attn2c_convnext_attn2c_v2_seed42/convnext_tiny_cam2_lambda0.5.pth",
+  "1.0": "/content/drive/MyDrive/BreastCancer_dissertation/Models/convnext_roi_attention_2class/convnext_tiny_roi_attn2c_convnext_attn2c_v2_seed42/convnext_tiny_cam2_lambda1.0.pth"
+}

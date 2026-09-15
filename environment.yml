@@ -1,0 +1,22 @@
+name: mammogram-roi-guided-deep-learning
+
+channels:
+  - conda-forge
+  - pytorch
+
+dependencies:
+  - python>=3.10
+  - pip
+  - numpy
+  - pandas
+  - matplotlib
+  - pillow
+  - scipy
+  - scikit-learn
+  - tqdm
+  - jupyter
+  - ipykernel
+  - pytest
+  - pip:
+      - torch
+      - torchvision

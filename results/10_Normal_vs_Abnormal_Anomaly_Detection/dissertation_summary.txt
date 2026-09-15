@@ -1,0 +1,30 @@
+Experiment: True normal-vs-abnormal mammogram anomaly detection
+
+Primary encoder:
+ImageNet-pretrained ResNet-50, frozen, 2048-dimensional features.
+
+One-class fitting:
+Only genuine normal training mammograms were used to fit the normal distribution.
+
+Methods:
+Mahalanobis, IsolationForest, OneClassSVM
+
+Primary method selected by validation ROC-AUC:
+IsolationForest
+
+Primary method locked-test ROC-AUC:
+0.5688
+
+Primary method patient-level bootstrap 95% CI:
+[0.4021, 0.7429]
+
+Highest observed locked-test ROC-AUC (descriptive only):
+Mahalanobis: 0.5705
+
+Threshold:
+Selected on validation data using Youden's J and frozen before test evaluation.
+
+Important interpretation:
+This is a normal-vs-abnormal detection experiment and should not be treated as
+the same task as benign-vs-malignant classification or Notebook 09's benign
+one-class malignant-case separability experiment.

@@ -1,0 +1,16 @@
+{
+  "source_experiment": "06_TwoClass_ROI_Attention_Supervision",
+  "training_performed_here": false,
+  "seed": 42,
+  "control_lambda": 0.0,
+  "selected_lambda": 0.5,
+  "control_threshold": 0.43999999999999995,
+  "selected_threshold": 0.29,
+  "case_selection_rule": {
+    "false_negative": "lowest selected-model p_malignant among selected-model FNs with a valid malignant ROI",
+    "false_positive": "highest selected-model p_malignant among selected-model FPs with a valid benign ROI"
+  },
+  "image_size": 512,
+  "cam_evaluation_size": 128,
+  "notes": "True-class CAMs are used for ROI localisation; predicted/decision-class CAMs are shown separately for qualitative decision explanation. No model is trained or fine-tuned here."
+}

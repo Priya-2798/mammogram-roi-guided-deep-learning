@@ -1,0 +1,41 @@
+Experiment:
+Supervised normal-vs-abnormal classification on mini-MIAS.
+
+Model:
+ImageNet-pretrained ResNet-50 with a binary classifier head.
+Head warm-up followed by partial fine-tuning of layer4.
+
+Split:
+Patient-level train/validation/locked-test split, matched to Notebook 10 when available.
+
+Best checkpoint selection:
+Validation ROC-AUC only.
+
+Validation-selected threshold:
+0.495179
+
+Locked-test ROC-AUC:
+0.5874
+
+Patient-level bootstrap 95% CI for ROC-AUC:
+[0.4173, 0.7317]
+
+Locked-test PR-AUC:
+0.5266
+
+Sensitivity:
+0.5263
+
+Specificity:
+0.5806
+
+Balanced accuracy:
+0.5535
+
+F1:
+0.4762
+
+Important interpretation:
+This is a supervised normal-vs-abnormal classification baseline. It should be
+compared with Notebook 10 as a different learning paradigm on the same task,
+not as if the one-class detector had been fine-tuned into this model.

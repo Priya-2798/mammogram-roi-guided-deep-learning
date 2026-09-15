@@ -1,0 +1,5 @@
+{
+  "Mahalanobis": 37.7835205078125,
+  "IsolationForest": 0.3589614206498895,
+  "OneClassSVM": -0.4243070361043943
+}

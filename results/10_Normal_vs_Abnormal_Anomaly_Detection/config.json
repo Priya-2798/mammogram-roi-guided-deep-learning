@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-08-11T14:48:24.275271",
+  "experiment": "true_normal_vs_abnormal_anomaly_detection_miniMIAS",
+  "framing": "mini-MIAS one-class modelling of genuinely normal mammograms; abnormal mammograms scored as deviations",
+  "project_dir": "/content/drive/MyDrive/deep_learning_tumor_detection_mammogram_classification",
+  "manifest_path": "/content/drive/MyDrive/deep_learning_tumor_detection_mammogram_classification/Data/Normal_Abnormal/normal_abnormal_manifest.csv",
+  "dataset_fingerprint": "9a14d266373a79152071e0d6ac053d82ddfdbb5b8eeb7fa1f7adc0aeb0ed827a",
+  "encoder": "ImageNet ResNet-50 V2 weights, frozen feature extractor",
+  "image_size": 512,
+  "feature_dim": 2048,
+  "normal_train_images": 144,
+  "pca_components": 110,
+  "pca_variance_retained": 0.9505661725997925,
+  "methods": [
+    "Mahalanobis",
+    "IsolationForest",
+    "OneClassSVM"
+  ],
+  "threshold_rule": "validation Youden J",
+  "bootstrap_n": 1000,
+  "seed": 42,
+  "source_confounding_override": false,
+  "primary_method_selection_rule": "highest validation ROC-AUC",
+  "primary_method": "IsolationForest",
+  "primary_method_locked_test_auc": 0.568760611205433,
+  "highest_observed_locked_test_method_descriptive_only": "Mahalanobis",
+  "highest_observed_locked_test_auc_descriptive_only": 0.5704584040747029
+}

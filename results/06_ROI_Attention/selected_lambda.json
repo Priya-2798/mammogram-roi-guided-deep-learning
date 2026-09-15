@@ -1,0 +1,5 @@
+{
+  "selected_lambda": 0.5,
+  "auc0": 0.672338839895665,
+  "rule": "max malignant val PG s.t. val AUC>=auc0-0.01; tie: pixel_ap, then smaller \u03bb"
+}

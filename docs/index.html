@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Deep Learning in Tumour Detection and Mammogram Classification</title>
+
+  <meta
+    name="description"
+    content="MSc Artificial Intelligence dissertation project by Priyanka Chatterjee investigating mammogram classification, ROI-guided attention, localisation, multimodal fusion and anomaly detection."
+  >
+
+  <style>
+    :root {
+      --bg: #f7f8fc;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --primary: #6d28d9;
+      --primary-dark: #4c1d95;
+      --accent: #9333ea;
+      --soft: #f3e8ff;
+      --border: #e4e7ec;
+      --dark: #111827;
+      --dark-card: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .container {
+      width: min(1160px, 92%);
+      margin: auto;
+    }
+
+    section {
+      padding: 80px 0;
+    }
+
+    /* NAVIGATION */
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      min-height: 72px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .brand {
+      color: var(--primary-dark);
+      font-size: 1.05rem;
+      font-weight: 850;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      flex-wrap: wrap;
+      color: #475467;
+      font-size: 0.92rem;
+      font-weight: 650;
+    }
+
+    .nav-links a {
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .code-nav {
+      color: var(--primary-dark) !important;
+      font-weight: 800 !important;
+    }
+
+    /* HERO */
+
+    .hero {
+      color: white;
+      background:
+        radial-gradient(
+          circle at 15% 15%,
+          rgba(147, 51, 234, 0.26),
+          transparent 33%
+        ),
+        radial-gradient(
+          circle at 90% 25%,
+          rgba(124, 58, 237, 0.30),
+          transparent 35%
+        ),
+        linear-gradient(
+          135deg,
+          #111827 0%,
+          #291254 48%,
+          #5b21b6 100%
+        );
+      padding: 105px 0 92px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 58px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 7px 14px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.27);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 0.82rem;
+      font-weight: 750;
+    }
+
+    h1 {
+      max-width: 800px;
+      margin: 0 0 25px;
+      font-size: clamp(2.6rem, 5vw, 4.7rem);
+      line-height: 1.04;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-description {
+      max-width: 790px;
+      margin-bottom: 27px;
+      color: #e9d5ff;
+      font-size: 1.08rem;
+    }
+
+    .hero-meta {
+      margin-bottom: 30px;
+      color: #ddd6fe;
+      font-size: 0.96rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 13px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 750;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      color: var(--primary-dark);
+      background: white;
+    }
+
+    .btn-secondary {
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-card {
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.11);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-card h3 {
+      margin: 0 0 18px;
+      font-size: 1.25rem;
+    }
+
+    .hero-card ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #f3e8ff;
+    }
+
+    /* HEADINGS */
+
+    .section-heading {
+      max-width: 820px;
+      margin-bottom: 42px;
+    }
+
+    .section-label {
+      margin-bottom: 8px;
+      color: var(--primary);
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 3.7vw, 3rem);
+      line-height: 1.15;
+      letter-spacing: -0.035em;
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.03rem;
+    }
+
+    /* OVERVIEW */
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 45px;
+      align-items: start;
+    }
+
+    .overview-text {
+      color: #344054;
+      font-size: 1.01rem;
+    }
+
+    .overview-text p:first-child {
+      margin-top: 0;
+    }
+
+    .highlight-box {
+      padding: 26px;
+      border-left: 5px solid var(--primary);
+      border-radius: 12px;
+      background: var(--soft);
+    }
+
+    .highlight-box strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--primary-dark);
+    }
+
+    /* METRICS */
+
+    .metrics {
+      background: white;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .metric-card {
+      padding: 27px 23px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      box-shadow: 0 9px 30px rgba(16, 24, 40, 0.05);
+    }
+
+    .metric-value {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--primary);
+      font-size: 2rem;
+      font-weight: 850;
+    }
+
+    .metric-title {
+      margin-bottom: 5px;
+      font-weight: 780;
+    }
+
+    .metric-caption {
+      color: var(--muted);
+      font-size: 0.87rem;
+    }
+
+    /* METHODS */
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .method-card {
+      padding: 27px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .method-number {
+      display: flex;
+      width: 39px;
+      height: 39px;
+      margin-bottom: 18px;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-dark);
+      background: var(--soft);
+      border-radius: 10px;
+      font-weight: 850;
+    }
+
+    .method-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+
+    .method-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.91rem;
+    }
+
+    /* FINDINGS */
+
+    .finding {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 48px;
+      align-items: center;
+      margin-bottom: 65px;
+    }
+
+    .finding.reverse {
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+
+    .finding:last-child {
+      margin-bottom: 0;
+    }
+
+    .finding-image {
+      overflow: hidden;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 12px 35px rgba(16, 24, 40, 0.09);
+    }
+
+    .finding-image img {
+      width: 100%;
+      height: auto;
+    }
+
+    .finding-text h3 {
+      margin: 0 0 13px;
+      font-size: 1.6rem;
+      line-height: 1.25;
+    }
+
+    .finding-text p {
+      color: #475467;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 5px 10px;
+      color: var(--primary-dark);
+      background: var(--soft);
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 850;
+    }
+
+    /* MULTIMODAL VISUAL */
+
+    .multimodal-chart {
+      padding: 28px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 12px 35px rgba(16, 24, 40, 0.08);
+    }
+
+    .multimodal-chart h4 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .multimodal-chart .chart-note {
+      margin: 0 0 25px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 115px 1fr 65px;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .bar-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .bar-label {
+      font-size: 0.83rem;
+      font-weight: 700;
+    }
+
+    .bar-track {
+      overflow: hidden;
+      height: 22px;
+      background: #ede9fe;
+      border-radius: 999px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(
+        90deg,
+        #7c3aed,
+        #a855f7
+      );
+    }
+
+    .bar-value {
+      color: var(--primary-dark);
+      font-size: 0.86rem;
+      font-weight: 850;
+      text-align: right;
+    }
+
+    .chart-conclusion {
+      margin-top: 24px;
+      padding-top: 17px;
+      border-top: 1px solid var(--border);
+      color: #475467;
+      font-size: 0.84rem;
+    }
+
+    /* VISUAL GALLERY */
+
+    .gallery {
+      color: white;
+      background: var(--dark);
+    }
+
+    .gallery .section-heading p {
+      color: #cbd5e1;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .gallery-card {
+      overflow: hidden;
+      height: auto;
+      background: var(--dark-card);
+      border: 1px solid #374151;
+      border-radius: 17px;
+    }
+
+    .gallery-card img {
+      width: 100%;
+      height: auto;
+      background: white;
+    }
+
+    .gallery-content {
+      padding: 20px 22px;
+    }
+
+    .gallery-content h3 {
+      margin: 0 0 6px;
+    }
+
+    .gallery-content p {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 0.9rem;
+    }
+
+    /* CONTRIBUTIONS */
+
+    .contribution-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .contribution-card {
+      padding: 25px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+    }
+
+    .contribution-card h3 {
+      margin-top: 0;
+      color: var(--primary-dark);
+    }
+
+    .contribution-card p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    /* REPOSITORY */
+
+    .repo-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 35px;
+      padding: 45px;
+      color: white;
+      background: linear-gradient(
+        135deg,
+        #5b21b6,
+        #86198f
+      );
+      border-radius: 22px;
+    }
+
+    .repo-box h2 {
+      margin-top: 0;
+    }
+
+    .repo-box p {
+      max-width: 720px;
+      color: #f3e8ff;
+    }
+
+    /* DISCLAIMER */
+
+    .disclaimer {
+      padding: 27px;
+      background: var(--soft);
+      border-left: 5px solid #8b5cf6;
+      border-radius: 12px;
+    }
+
+    .disclaimer strong {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--primary-dark);
+    }
+
+    /* FOOTER */
+
+    footer {
+      padding: 40px 0;
+      color: #94a3b8;
+      background: #0f172a;
+      font-size: 0.9rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+
+    .footer-name {
+      color: white;
+      font-weight: 750;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .overview-grid,
+      .finding,
+      .finding.reverse {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-grid,
+      .method-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .gallery-grid,
+      .contribution-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .repo-box {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .nav-links {
+        gap: 13px;
+        font-size: 0.8rem;
+      }
+
+      .nav-links a:not(.code-nav) {
+        display: none;
+      }
+
+      .metric-grid,
+      .method-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 75px 0 65px;
+      }
+
+      section {
+        padding: 62px 0;
+      }
+
+      .bar-row {
+        grid-template-columns: 88px 1fr 55px;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <!-- NAVIGATION -->
+
+  <nav>
+    <div class="container nav-inner">
+
+      <a class="brand" href="#top">
+        Priyanka Chatterjee · MSc AI
+      </a>
+
+      <div class="nav-links">
+        <a href="#overview">Overview</a>
+        <a href="#results">Results</a>
+        <a href="#visuals">Visuals</a>
+        <a href="#contributions">Contributions</a>
+        <a href="#citation">Citation</a>
+
+        <a
+          class="code-nav"
+          href="https://github.com/Priya-2798/mammogram-roi-guided-deep-learning"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Code ↗
+        </a>
+      </div>
+
+    </div>
+  </nav>
+
+
+  <!-- HERO -->
+
+  <header class="hero" id="top">
+
+    <div class="container hero-grid">
+
+      <div>
+
+        <div class="eyebrow">
+          MSc Artificial Intelligence · University of Surrey · 2026
+        </div>
+
+        <h1>
+          Deep Learning in Tumour Detection and Mammogram Classification
+        </h1>
+
+        <p class="hero-description">
+          A dissertation investigating mammogram classification,
+          radiologist ROI-guided attention, model localisation,
+          multimodal image–metadata fusion, and anomaly detection.
+        </p>
+
+        <div class="hero-meta">
+          <strong>Priyanka Chatterjee</strong><br>
+          Supervisor: Dr Lucia Florescu
+        </div>
+
+        <div class="hero-buttons">
+
+          <a
+            class="btn btn-primary"
+            href="https://github.com/Priya-2798/mammogram-roi-guided-deep-learning"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View GitHub Repository
+          </a>
+
+          <a class="btn btn-secondary" href="#results">
+            Explore Results
+          </a>
+
+        </div>
+
+      </div>
+
+
+      <aside class="hero-card">
+
+        <h3>Project Focus</h3>
+
+        <ul>
+          <li>CBIS-DDSM mammogram classification</li>
+          <li>ResNet-50 and ConvNeXt-Tiny</li>
+          <li>Grad-CAM localisation</li>
+          <li>Radiologist ROI supervision</li>
+          <li>Image + metadata fusion</li>
+          <li>mini-MIAS anomaly detection</li>
+          <li>Patient-disjoint evaluation</li>
+        </ul>
+
+      </aside>
+
+    </div>
+
+  </header>
+
+
+  <!-- OVERVIEW -->
+
+  <section id="overview">
+
+    <div class="container">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          Research Overview
+        </div>
+
+        <h2>
+          Can radiologist-defined ROIs guide model attention?
+        </h2>
+
+        <p>
+          The project examines both predictive performance and spatial
+          localisation rather than treating classification accuracy alone
+          as evidence that a model is using medically relevant image regions.
+        </p>
+
+      </div>
+
+
+      <div class="overview-grid">
+
+        <div class="overview-text">
+
+          <p>
+            Mammography deep-learning models can achieve useful
+            classification performance while still relying on image regions
+            that do not necessarily correspond to radiologist-identified
+            lesions.
+          </p>
+
+          <p>
+            This dissertation therefore investigates whether explicit
+            ROI-guided attention supervision can improve spatial alignment
+            between model activation and annotated lesion regions.
+          </p>
+
+          <p>
+            The main experimental pipeline used
+            <strong>CBIS-DDSM mass cases</strong> with patient-disjoint
+            partitions. Classification experiments were complemented by
+            Grad-CAM localisation, ROI registration, class-specific
+            attention supervision, multimodal image–metadata fusion,
+            cross-backbone analysis, and failure-case evaluation.
+          </p>
+
+          <p>
+            A separate <strong>mini-MIAS</strong> branch investigated
+            normal-versus-abnormal discrimination through both one-class
+            anomaly detection and supervised learning.
+          </p>
+
+        </div>
+
+
+        <div class="highlight-box">
+
+          <strong>Central research question</strong>
+
+          Can radiologist-defined lesion regions improve the spatial
+          behaviour of deep-learning mammography classifiers without
+          degrading useful predictive performance?
+
+          <br><br>
+
+          The results indicate that localisation quality and
+          classification discrimination should be evaluated as related
+          but distinct objectives.
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- HEADLINE RESULTS -->
+
+  <section class="metrics" id="results">
+
+    <div class="container">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          Headline Results
+        </div>
+
+        <h2>
+          Key experimental findings
+        </h2>
+
+        <p>
+          Selected classification, multimodal and localisation findings
+          from the dissertation.
+        </p>
+
+      </div>
+
+
+      <div class="metric-grid">
+
+        <div class="metric-card">
+
+          <span class="metric-value">
+            0.7965
+          </span>
+
+          <div class="metric-title">
+            ResNet-50 ROC-AUC
+          </div>
+
+          <div class="metric-caption">
+            Primary baseline classification result.
+          </div>
+
+        </div>
+
+
+        <div class="metric-card">
+
+          <span class="metric-value">
+            0.8598
+          </span>
+
+          <div class="metric-title">
+            Image + Metadata ROC-AUC
+          </div>
+
+          <div class="metric-caption">
+            M3 multimodal image and metadata configuration.
+          </div>
+
+        </div>
+
+
+        <div class="metric-card">
+
+          <span class="metric-value">
+            0.8644
+          </span>
+
+          <div class="metric-title">
+            Highest Observed Multimodal AUC
+          </div>
+
+          <div class="metric-caption">
+            M4 ROI-guided + metadata configuration.
+          </div>
+
+        </div>
+
+
+        <div class="metric-card">
+
+          <span class="metric-value">
+            ↑
+          </span>
+
+          <div class="metric-title">
+            Improved Localisation
+          </div>
+
+          <div class="metric-caption">
+            ROI supervision improved several spatial alignment measures.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- PIPELINE -->
+
+  <section>
+
+    <div class="container">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          Experimental Pipeline
+        </div>
+
+        <h2>
+          From baseline classification to explainability analysis
+        </h2>
+
+      </div>
+
+
+      <div class="method-grid">
+
+        <div class="method-card">
+
+          <div class="method-number">
+            01
+          </div>
+
+          <h3>
+            Dataset Analysis
+          </h3>
+
+          <p>
+            CBIS-DDSM exploratory analysis and patient-disjoint
+            experimental partitions.
+          </p>
+
+        </div>
+
+
+        <div class="method-card">
+
+          <div class="method-number">
+            02
+          </div>
+
+          <h3>
+            ResNet-50 Classification
+          </h3>
+
+          <p>
+            Baseline and breast-focused 512 × 512 mammogram
+            classification pipelines.
+          </p>
+
+        </div>
+
+
+        <div class="method-card">
+
+          <div class="method-number">
+            03
+          </div>
+
+          <h3>
+            Grad-CAM
+          </h3>
+
+          <p>
+            Class-specific model activation compared with
+            radiologist-defined lesion ROIs.
+          </p>
+
+        </div>
+
+
+        <div class="method-card">
+
+          <div class="method-number">
+            04
+          </div>
+
+          <h3>
+            ROI Attention Supervision
+          </h3>
+
+          <p>
+            Class-specific attention supervision encouraging spatial
+            alignment with lesion regions.
+          </p>
+
+        </div>
+
+
+        <div class="method-card">
+
+          <div class="method-number">
+            05
+          </div>
+
+          <h3>
+            Multimodal Fusion
+          </h3>
+
+          <p>
+            Image representations combined with breast density,
+            mass shape and mass-margin metadata.
+          </p>
+
+        </div>
+
+
+        <div class="method-card">
+
+          <div class="method-number">
+            06
+          </div>
+
+          <h3>
+            External Analysis
+          </h3>
+
+          <p>
+            mini-MIAS anomaly detection and supervised
+            normal-versus-abnormal experiments.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- CLASSIFICATION RESULT -->
+
+  <section>
+
+    <div class="container">
+
+      <div class="finding">
+
+        <div class="finding-text">
+
+          <div class="tag">
+            Classification
+          </div>
+
+          <h3>
+            Strong baseline discrimination
+          </h3>
+
+          <p>
+            The ResNet-50 mammography pipeline achieved a locked-test
+            ROC-AUC of <strong>0.7965</strong>, establishing a useful
+            classification baseline for the later localisation and
+            ROI-guided experiments.
+          </p>
+
+          <p>
+            The project subsequently evaluated whether improving where
+            the model attends leads to corresponding improvements in
+            predictive discrimination.
+          </p>
+
+        </div>
+
+
+        <div class="finding-image">
+
+          <img
+            src="assets/images/Figure_4_1_locked_test_roc_auc.png"
+            alt="Locked-test ROC-AUC comparison across principal mammography configurations"
+          >
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- LOCALISATION RESULT -->
+
+  <section>
+
+    <div class="container">
+
+      <div class="finding reverse">
+
+        <div class="finding-image">
+
+          <img
+            src="assets/images/resnet50_gradcam_roi_examples.png"
+            alt="ResNet-50 Grad-CAM and radiologist ROI examples"
+          >
+
+        </div>
+
+
+        <div class="finding-text">
+
+          <div class="tag">
+            Explainability & Localisation
+          </div>
+
+          <h3>
+            ROI guidance improved spatial behaviour
+          </h3>
+
+          <p>
+            Class-specific ROI-guided attention supervision improved
+            several localisation measures, including Pointing Game and
+            pixel-level average precision.
+          </p>
+
+          <p>
+            However, improved attribution overlap did not produce a
+            clear statistically supported improvement in classification
+            AUC.
+          </p>
+
+          <p>
+            This distinction between spatial alignment and predictive
+            performance is one of the central findings of the dissertation.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- MULTIMODAL RESULT -->
+
+  <section>
+
+    <div class="container">
+
+      <div class="finding">
+
+        <div class="finding-text">
+
+          <div class="tag">
+            Multimodal Learning
+          </div>
+
+          <h3>
+            Clinical metadata strengthened prediction
+          </h3>
+
+          <p>
+            The image-only multimodal configuration achieved ROC-AUC
+            <strong>0.7873</strong>.
+          </p>
+
+          <p>
+            Combining image representations with breast density,
+            mass shape and mass margins increased ROC-AUC to
+            <strong>0.8598</strong> for the M3 image + metadata
+            configuration.
+          </p>
+
+          <p>
+            M4 produced the highest observed ROC-AUC of
+            <strong>0.8644</strong>, although the experiment did not
+            establish a supported improvement over M3.
+          </p>
+
+          <p>
+            BI-RADS assessment was deliberately excluded from the
+            metadata features to reduce the risk of target leakage.
+          </p>
+
+        </div>
+
+
+        <div class="multimodal-chart">
+
+          <h4>
+            Multimodal locked-test ROC-AUC
+          </h4>
+
+          <p class="chart-note">
+            Comparison of the four multimodal configurations.
+          </p>
+
+
+          <div class="bar-row">
+
+            <div class="bar-label">
+              M1 Image
+            </div>
+
+            <div class="bar-track">
+              <div
+                class="bar-fill"
+                style="width: 78.73%;"
+              ></div>
+            </div>
+
+            <div class="bar-value">
+              0.7873
+            </div>
+
+          </div>
+
+
+          <div class="bar-row">
+
+            <div class="bar-label">
+              M2 Metadata
+            </div>
+
+            <div class="bar-track">
+              <div
+                class="bar-fill"
+                style="width: 81.54%;"
+              ></div>
+            </div>
+
+            <div class="bar-value">
+              0.8154
+            </div>
+
+          </div>
+
+
+          <div class="bar-row">
+
+            <div class="bar-label">
+              M3 Image + Meta
+            </div>
+
+            <div class="bar-track">
+              <div
+                class="bar-fill"
+                style="width: 85.98%;"
+              ></div>
+            </div>
+
+            <div class="bar-value">
+              0.8598
+            </div>
+
+          </div>
+
+
+          <div class="bar-row">
+
+            <div class="bar-label">
+              M4 ROI + Meta
+            </div>
+
+            <div class="bar-track">
+              <div
+                class="bar-fill"
+                style="width: 86.44%;"
+              ></div>
+            </div>
+
+            <div class="bar-value">
+              0.8644
+            </div>
+
+          </div>
+
+
+          <div class="chart-conclusion">
+            M3 provides the strongest clean multimodal comparison,
+            while M4 has the highest raw ROC-AUC but no supported
+            improvement over M3.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- VISUAL GALLERY -->
+
+  <section class="gallery" id="visuals">
+
+    <div class="container">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          Project Visuals
+        </div>
+
+        <h2>
+          Selected experiment outputs
+        </h2>
+
+        <p>
+          Qualitative figures are shown alongside numerical metrics to
+          support transparent analysis of model behaviour.
+        </p>
+
+      </div>
+
+
+      <div class="gallery-grid">
+
+        <article class="gallery-card">
+
+          <img
+            src="assets/images/resnet50_gradcam_roi_examples.png"
+            alt="Grad-CAM and radiologist ROI comparison"
+          >
+
+          <div class="gallery-content">
+
+            <h3>
+              Grad-CAM & Radiologist ROI
+            </h3>
+
+            <p>
+              Qualitative comparison between model activation and
+              annotated lesion regions.
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <article class="gallery-card">
+
+          <img
+            src="assets/images/Figure_4_2_resnet_failure_cases.png"
+            alt="ResNet ROI-attention failure-case analysis"
+          >
+
+          <div class="gallery-content">
+
+            <h3>
+              Failure-Case Analysis
+            </h3>
+
+            <p>
+              Matched control and ROI-supervised examples used to
+              investigate classification and localisation behaviour.
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <article class="gallery-card">
+
+          <img
+            src="assets/images/normal_vs_abnormal_test_figures.png"
+            alt="mini-MIAS normal versus abnormal anomaly-detection results"
+          >
+
+          <div class="gallery-content">
+
+            <h3>
+              mini-MIAS Anomaly Detection
+            </h3>
+
+            <p>
+              Locked-test analysis of the normal-versus-abnormal
+              one-class anomaly-detection branch.
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <article class="gallery-card">
+
+          <img
+            src="assets/images/supervised_locked_test_figures.png"
+            alt="mini-MIAS supervised classification results"
+          >
+
+          <div class="gallery-content">
+
+            <h3>
+              Supervised mini-MIAS Baseline
+            </h3>
+
+            <p>
+              Supervised normal-versus-abnormal comparison using the
+              same patient-level split.
+            </p>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- CONTRIBUTIONS -->
+
+  <section id="contributions">
+
+    <div class="container">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          Research Contributions
+        </div>
+
+        <h2>
+          What the dissertation demonstrates
+        </h2>
+
+      </div>
+
+
+      <div class="contribution-grid">
+
+        <div class="contribution-card">
+
+          <h3>
+            Localisation and classification are distinct
+          </h3>
+
+          <p>
+            Better alignment between attribution maps and radiologist
+            ROIs does not necessarily result in higher classification AUC.
+          </p>
+
+        </div>
+
+
+        <div class="contribution-card">
+
+          <h3>
+            Cross-backbone evaluation
+          </h3>
+
+          <p>
+            ROI-guided attention was investigated using both ResNet-50
+            and ConvNeXt-Tiny rather than relying on a single
+            architecture.
+          </p>
+
+        </div>
+
+
+        <div class="contribution-card">
+
+          <h3>
+            Multimodal information is valuable
+          </h3>
+
+          <p>
+            Combining image features with carefully selected radiological
+            metadata produced substantially stronger discrimination than
+            the corresponding image-only configuration.
+          </p>
+
+        </div>
+
+
+        <div class="contribution-card">
+
+          <h3>
+            Reproducible evaluation
+          </h3>
+
+          <p>
+            Patient-disjoint partitions, saved predictions, manifests,
+            configuration files, bootstrap analyses, figures and
+            experiment notebooks are preserved in the repository.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- REPOSITORY -->
+
+  <section>
+
+    <div class="container">
+
+      <div class="repo-box">
+
+        <div>
+
+          <h2>
+            Explore the complete research repository
+          </h2>
+
+          <p>
+            The GitHub repository contains the canonical experiment
+            notebooks, reusable Python modules, scripts, result artifacts,
+            figures, patient-level split manifests, documentation and
+            test suite.
+          </p>
+
+        </div>
+
+
+        <a
+          class="btn btn-primary"
+          href="https://github.com/Priya-2798/mammogram-roi-guided-deep-learning"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open GitHub Repository
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- CITATION -->
+
+  <section id="citation">
+
+  <div class="container">
+
+    <div
+      class="section-heading"
+      style="text-align: center; margin-left: auto; margin-right: auto;"
+    >
+      <div class="section-label">
+        Citation
+      </div>
+
+      <h2>
+        Citation
+      </h2>
+    </div>
+
+    <div
+      style="
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 28px 30px;
+        background: #0f172a;
+        color: white;
+        border-radius: 14px;
+        font-family: Consolas, Monaco, monospace;
+        line-height: 1.8;
+      "
+    >
+      Priyanka Chatterjee (2026).<br>
+      Deep Learning in Tumour Detection and Mammogram Classification.<br>
+      MSc Artificial Intelligence dissertation project, University of Surrey.
+    </div>
+
+  </div>
+
+  </section>
+
+  <!-- DISCLAIMER -->
+
+  <section>
+
+    <div class="container">
+
+      <div class="disclaimer">
+
+        <strong>
+          Clinical-use disclaimer
+        </strong>
+
+        This project is academic research only. Improved agreement
+        between model attribution maps and radiologist-defined ROIs
+        does not by itself demonstrate causal reasoning, diagnostic
+        validity, clinical safety, or readiness for deployment.
+        External clinical validation would be required before clinical
+        interpretation or use.
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <div class="container footer-inner">
+
+      <div>
+        <span class="footer-name">
+          Priyanka Chatterjee
+        </span>
+        <br>
+        MSc Artificial Intelligence · University of Surrey
+      </div>
+
+
+      <div>
+        Deep Learning in Tumour Detection and Mammogram Classification
+      </div>
+
+    </div>
+
+  </footer>
+
+</body>
+
+</html>

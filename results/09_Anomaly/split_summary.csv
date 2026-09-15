@@ -1,0 +1,4 @@
+split,images,patients,malignant_rate,benign_images
+train,1051,592,0.4804947668886774,546
+validation,180,99,0.5388888888888889,83
+locked_test,361,201,0.40166204986149584,216

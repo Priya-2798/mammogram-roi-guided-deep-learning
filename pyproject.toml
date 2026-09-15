@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mammogram-roi-guided-deep-learning"
+version = "0.1.0"
+description = "Deep learning experiments for mammogram classification, ROI-guided attention, localisation, multimodal fusion, and anomaly detection."
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "Pillow",
+    "scipy",
+    "scikit-learn",
+    "torch",
+    "torchvision",
+    "tqdm"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,2 @@
+comparison,delta_auc,ci_low,ci_high,n_boot
+IsolationForest - Mahalanobis,-0.003767560664112324,-0.012750562628210851,0.004068569846716263,1000

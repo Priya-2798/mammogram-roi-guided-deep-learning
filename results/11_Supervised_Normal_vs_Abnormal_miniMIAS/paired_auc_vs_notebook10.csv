@@ -1,0 +1,2 @@
+comparison,supervised_auc,oneclass_auc,delta_auc,ci_low,ci_high,n_boot
+Supervised ResNet50 - Notebook10 IsolationForest,0.5874363327674024,0.568760611205433,0.018675721561969394,-0.21601136363636356,0.2134563492063491,1000

@@ -1,0 +1,4 @@
+{
+  "method": "validation_youden_j",
+  "threshold": 0.39
+}

@@ -1,0 +1,5 @@
+Model,ROC-AUC,Sensitivity,Specificity,Balanced Acc.,F1
+M1 image only,0.7873,0.8069,0.5509,0.6789,0.6518
+M2 metadata only,0.8154,0.7931,0.7037,0.7484,0.7099
+M3 image + metadata,0.8598,0.8483,0.7917,0.82,0.7859
+M4 ROI init + metadata,0.8644,0.8621,0.6806,0.7713,0.7375
