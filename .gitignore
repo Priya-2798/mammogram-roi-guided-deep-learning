@@ -51,3 +51,4 @@ Thumbs.db
 build/
 dist/
 *.egg-info/
+!streamlit_app/resnet50_cam2_lambda0.5.pth
