@@ -1,5 +1,8 @@
-# ROI-Guided Mammography Classification
-🌐 **Live Project Website:** [Click here to view the interactive dissertation project page](https://priya-2798.github.io/mammogram-roi-guided-deep-learning/)
+## ROI-Guided Mammography Classification
+
+🌐 **Live Project Website:** [View the interactive dissertation project page](https://priya-2798.github.io/mammogram-roi-guided-deep-learning/)
+
+🧠 **Live AI Research Demo:** [Launch the Mammogram AI Demo](https://mammogram-roi-guided-deep-learning-nbsnno5p4tgzilh9caeiuk.streamlit.app/)
 
 Research code for an MSc Artificial Intelligence dissertation investigating whether radiologist-defined regions of interest (ROIs) can guide model attention while maintaining useful benign-versus-malignant mammography classification performance.
 
