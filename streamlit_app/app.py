@@ -53,8 +53,72 @@ st.markdown(
     }
 
     html, body, [class*="css"] {font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;}
-    .stApp {background: linear-gradient(180deg, #f8fbfc 0%, #f8fafc 38%, #ffffff 100%); color: var(--ink);}
+
+    /* Keep the app readable even when the viewer's OS/browser/Streamlit is in dark mode.
+       This dashboard intentionally uses a light main canvas with a dark sidebar. */
+    html, body, .stApp, [data-testid="stAppViewContainer"] {color-scheme: light !important;}
+    .stApp, [data-testid="stAppViewContainer"] {background: linear-gradient(180deg, #f8fbfc 0%, #f8fafc 38%, #ffffff 100%) !important; color: var(--ink) !important;}
     .block-container {max-width: 1320px; padding-top: 1.5rem; padding-bottom: 3rem;}
+
+    /* Native Streamlit text: force dark text on the light main canvas. */
+    [data-testid="stAppViewContainer"] h1,
+    [data-testid="stAppViewContainer"] h2,
+    [data-testid="stAppViewContainer"] h3,
+    [data-testid="stAppViewContainer"] h4,
+    [data-testid="stAppViewContainer"] h5,
+    [data-testid="stAppViewContainer"] h6 {color: #0f172a !important;}
+
+    [data-testid="stAppViewContainer"] .stMarkdown p,
+    [data-testid="stAppViewContainer"] .stMarkdown li,
+    [data-testid="stAppViewContainer"] [data-testid="stCaptionContainer"],
+    [data-testid="stAppViewContainer"] [data-testid="stCaptionContainer"] *,
+    [data-testid="stAppViewContainer"] [data-testid="stWidgetLabel"] *,
+    [data-testid="stAppViewContainer"] [data-testid="stProgress"] p {color: #475569 !important;}
+
+    /* Metrics stay readable in dark system mode. */
+    [data-testid="stMetric"] {background:#ffffff !important;}
+    [data-testid="stMetricLabel"],
+    [data-testid="stMetricLabel"] * {color:#64748b !important;}
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricValue"] * {color:#0f172a !important;}
+    [data-testid="stMetricDelta"],
+    [data-testid="stMetricDelta"] * {color:#334155 !important;}
+
+    /* Tabs: Streamlit otherwise inherits white text from dark mode. */
+    button[data-baseweb="tab"],
+    button[data-baseweb="tab"] * {color:#334155 !important;}
+    button[data-baseweb="tab"][aria-selected="true"],
+    button[data-baseweb="tab"][aria-selected="true"] * {color:#0f172a !important;}
+
+    /* Buttons and file uploader. */
+    .stButton > button,
+    .stDownloadButton > button,
+    div[data-testid="stFileUploader"] button {
+        color:#0f172a !important;
+        background:#ffffff !important;
+        border-color:#cbd5e1 !important;
+    }
+    .stButton > button:hover,
+    .stDownloadButton > button:hover,
+    div[data-testid="stFileUploader"] button:hover {
+        color:#0f3d56 !important;
+        border-color:#0f766e !important;
+        background:#f8fafc !important;
+    }
+
+    div[data-testid="stFileUploader"],
+    div[data-testid="stFileUploader"] section {background:#ffffff !important;}
+    div[data-testid="stFileUploader"] *,
+    div[data-testid="stFileUploader"] section * {color:#334155 !important;}
+
+    /* Expanders and regular input surfaces. */
+    [data-testid="stExpander"] {background:#ffffff !important;}
+    [data-testid="stExpander"] summary,
+    [data-testid="stExpander"] summary *,
+    [data-testid="stExpander"] p,
+    [data-testid="stExpander"] div {color:#334155;}
+
+    input, textarea, [role="combobox"] {color:#0f172a !important; background:#ffffff !important;}
 
     /* Sidebar */
     [data-testid="stSidebar"] {background: #0b2230; border-right: 1px solid rgba(255,255,255,.08);}
