@@ -150,6 +150,17 @@ st.markdown(
     .arrow {color:#94a3b8; align-self:center; font-weight:700;}
 
     .mini-note {font-size:.82rem; color:var(--muted); line-height:1.45;}
+    .interpretation-box {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbfc 100%);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: 0 8px 24px rgba(15,23,42,.045);
+        margin: 14px 0 18px 0;
+    }
+    .interpretation-heading {font-size:1.06rem; font-weight:850; color:var(--ink); margin-bottom:8px;}
+    .interpretation-text {font-size:.92rem; color:#334155; line-height:1.62;}
+    .interpretation-text b {color:var(--ink);}
     .footer-note {margin-top:24px; color:var(--muted); font-size:.78rem; text-align:center;}
     </style>
     """,
@@ -409,6 +420,42 @@ with analysis_tab:
         st.progress(min(max(out["malignant_score"], 0.0), 1.0), text="Malignant model score")
         st.caption("Softmax score shown for research demonstration only; it is not a calibrated clinical probability.")
 
+        # Dynamic research interpretation
+        mal_score = 100 * out["malignant_score"]
+        ben_score = 100 * out["benign_score"]
+        threshold_pct = 100 * MALIGNANT_THRESHOLD
+
+        if out["predicted_class"] == 1:
+            interpretation_html = f"""
+            <div class="interpretation-box">
+              <div class="interpretation-heading">AI Research Interpretation</div>
+              <div class="interpretation-text">
+                <b>Classification:</b> The ROI-guided ResNet-50 assigned this mammogram to the <b>malignant class</b>.<br><br>
+                <b>Why:</b> The malignant model score was <b>{mal_score:.1f}%</b>, compared with <b>{ben_score:.1f}%</b> for the benign class.
+                Because the malignant score is above the dissertation-selected decision threshold of <b>{threshold_pct:.0f}%</b>, the model assigns the image to the malignant class.<br><br>
+                <b>What this means:</b> The model detected image patterns that its learned representation associates more strongly with the malignant class than with the benign class. This describes the behaviour of the research model only; it does not establish that a person has breast cancer.<br><br>
+                <b>How to read the CAM:</b> The Decision CAM below highlights regions contributing to the selected class output. Brighter or more strongly activated areas indicate stronger class-related activation. The CAM is not a tumour segmentation and should not be interpreted as an exact lesion boundary.<br><br>
+                <b>Clinical limitation:</b> The displayed score is a neural-network softmax score, not a clinically calibrated probability of cancer. This MSc research model has not been externally validated for clinical diagnosis.
+              </div>
+            </div>
+            """
+        else:
+            interpretation_html = f"""
+            <div class="interpretation-box">
+              <div class="interpretation-heading">AI Research Interpretation</div>
+              <div class="interpretation-text">
+                <b>Classification:</b> The ROI-guided ResNet-50 assigned this mammogram to the <b>benign class</b>.<br><br>
+                <b>Why:</b> The malignant model score was <b>{mal_score:.1f}%</b>, compared with <b>{ben_score:.1f}%</b> for the benign class.
+                Because the malignant score remains below the dissertation-selected decision threshold of <b>{threshold_pct:.0f}%</b>, the model assigns the image to the benign class.<br><br>
+                <b>What this means:</b> The uploaded image was more consistent with image patterns learned for the benign class under the decision rule used in this research. A benign model prediction does not rule out cancer and should not be interpreted as a clinical diagnosis.<br><br>
+                <b>How to read the CAM:</b> The Decision CAM below highlights regions contributing to the selected class output. Stronger activation shows where the network is responding, but it does not represent an exact lesion boundary or clinical explanation.<br><br>
+                <b>Clinical limitation:</b> The displayed score is a neural-network softmax score, not a clinically calibrated probability. This MSc research model has not been externally validated for clinical diagnosis.
+              </div>
+            </div>
+            """
+
+        st.markdown(interpretation_html, unsafe_allow_html=True)
+
         st.markdown('<div class="section-title">Visual analysis</div>', unsafe_allow_html=True)
         st.markdown('<div class="section-sub">Compare the uploaded image, the processed model input, and the class-specific decision attention.</div>', unsafe_allow_html=True)
         col_a, col_b, col_c = st.columns(3)
@@ -452,6 +499,27 @@ with explain_tab:
         with e2:
             st.markdown('<div class="image-label">Malignant-class CAM</div>', unsafe_allow_html=True)
             st.image(make_overlay(processed, out["malignant_cam"]), clamp=True, use_container_width=True)
+
+        decision_class_name = "malignant" if out["predicted_class"] == 1 else "benign"
+        alternative_class_name = "benign" if out["predicted_class"] == 1 else "malignant"
+
+        st.markdown(
+            f"""
+            <div class="interpretation-box">
+              <div class="interpretation-heading">Understanding the attention maps</div>
+              <div class="interpretation-text">
+                The ROI-guided ResNet-50 produces two separate class-specific activation maps through its 1×1 CAM head.<br><br>
+                <b>Benign-class CAM:</b> highlights image regions associated with evidence learned for the benign class.<br><br>
+                <b>Malignant-class CAM:</b> highlights image regions associated with evidence learned for the malignant class.<br><br>
+                <b>Decision map for this case:</b> the model predicted the <b>{decision_class_name} class</b>, so the <b>{decision_class_name}-class CAM</b> is the decision-class activation map. The {alternative_class_name}-class CAM shows the spatial evidence associated with the alternative class.<br><br>
+                <b>How to read the colours:</b> brighter or more strongly coloured regions indicate locations with stronger class-related activation. These maps show where the network is responding, not an exact tumour boundary.<br><br>
+                <b>Important:</b> the colour intensity of the benign and malignant maps should not be compared as if they were probabilities. The class scores in the <b>Analyze Mammogram</b> tab determine the classification result; these maps provide a spatial visualisation of model evidence.
+              </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
         st.markdown(
             '<div class="research-banner"><b>Interpretation note:</b> activation maps are visual evidence maps, not lesion segmentations. Spatial overlap with a lesion does not prove causal or clinical reasoning.</div>',
             unsafe_allow_html=True,
